@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BESAGONKA</title>
+    <title>Video Bubble</title>
 
     <style>
         * {
@@ -70,12 +69,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 90px;
+            flex-wrap: wrap;
 
             position: relative;
         }
 
         /* =========================
-           КНОПКА
+           КНОПКА №1 (Watch)
            ========================= */
 
         .play-button {
@@ -165,7 +166,7 @@
         }
 
         /* =========================
-           HOVER
+           HOVER (кнопка 1)
            ========================= */
 
         .play-button:hover {
@@ -213,7 +214,7 @@
         }
 
         /* =========================
-           PLAY ICON
+           PLAY ICON (кнопка 1)
            ========================= */
 
         .play-icon {
@@ -250,8 +251,621 @@
             opacity: 1;
         }
 
+        /* =====================================================
+           КНОПКА №2 (Reveal) — намеренно другая по форме и стилю:
+           ромб/октагон, тёплая (медно-золотая) палитра,
+           иконка-искра вместо треугольника,
+           анимация "пульс + переворот" вместо scale+rotate.
+           ===================================================== */
+
+        .spark-button {
+            position: relative;
+
+            width: 210px;
+            height: 210px;
+
+            border: 1px solid rgba(255,196,120,.25);
+
+            /* восьмиугольник вместо круга */
+            clip-path: polygon(
+                30% 0%, 70% 0%, 100% 30%, 100% 70%,
+                70% 100%, 30% 100%, 0% 70%, 0% 30%
+            );
+
+            background:
+                radial-gradient(
+                    circle at 30% 25%,
+                    #3a2612,
+                    #1a1006 55%,
+                    #050301
+                );
+
+            color: #ffd9a0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+
+            cursor: url("cursor.png") 16 16, pointer;
+
+            transition:
+                transform .6s cubic-bezier(.16,1,.3,1),
+                box-shadow .6s ease,
+                border-color .4s ease,
+                filter .4s ease;
+
+            box-shadow:
+                0 0 0 1px rgba(255,196,120,.03),
+                0 20px 80px rgba(0,0,0,.8);
+        }
+
+        /* Пульсирующее кольцо вокруг восьмиугольника */
+
+        .spark-button::before {
+            content: "";
+
+            position: absolute;
+            inset: -22px;
+
+            clip-path: polygon(
+                30% 0%, 70% 0%, 100% 30%, 100% 70%,
+                70% 100%, 30% 100%, 0% 70%, 0% 30%
+            );
+
+            border: 1px solid rgba(255,196,120,.15);
+
+            opacity: .5;
+
+            animation: sparkPulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes sparkPulse {
+            0%, 100% {
+                transform: scale(.94);
+                opacity: .35;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: .8;
+            }
+        }
+
+        /* Внутреннее тёплое свечение */
+
+        .spark-button::after {
+            content: "";
+
+            position: absolute;
+            inset: 12px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(255,196,120,.14),
+                    transparent 65%
+                );
+
+            opacity: .6;
+
+            transition:
+                transform .6s cubic-bezier(.16,1,.3,1),
+                opacity .5s ease;
+        }
+
         /* =========================
-           VIDEO OVERLAY
+           HOVER (кнопка 2)
+           ========================= */
+
+        .spark-button:hover {
+            transform:
+                scale(1.1)
+                rotate(45deg);
+
+            border-color: rgba(255,196,120,.6);
+
+            filter: brightness(1.15);
+
+            box-shadow:
+                0 0 50px rgba(255,196,120,.15),
+                0 30px 100px rgba(0,0,0,.9);
+        }
+
+        /* текст и иконку крутим обратно, чтобы они остались ровными */
+
+        .spark-button:hover .spark-inner {
+            transform: rotate(-45deg) scale(1.05);
+        }
+
+        .spark-inner {
+            position: relative;
+            z-index: 3;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+
+            transition: transform .6s cubic-bezier(.16,1,.3,1);
+        }
+
+        .spark-button:active {
+            transform: scale(.9) rotate(45deg);
+        }
+
+        /* =========================
+           SPARK ICON (кнопка 2)
+           ========================= */
+
+        .spark-icon {
+            position: relative;
+            width: 20px;
+            height: 20px;
+        }
+
+        .spark-icon::before,
+        .spark-icon::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: #ffd9a0;
+            transform: translate(-50%, -50%);
+        }
+
+        .spark-icon::before {
+            width: 4px;
+            height: 20px;
+            border-radius: 2px;
+        }
+
+        .spark-icon::after {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .spark-button:hover .spark-icon::before,
+        .spark-button:hover .spark-icon::after {
+            background: #fff0d6;
+        }
+
+        /* =====================================================
+           КНОПКА №3 (Chaos) — самая необычная:
+           треугольник, неоновый глитч-градиент (magenta/cyan),
+           текст "троится" и мерцает при наведении,
+           лёгкое дрожание вместо плавного поворота.
+           ===================================================== */
+
+        .glitch-button {
+            position: relative;
+
+            width: 220px;
+            height: 220px;
+
+            border: none;
+            background: none;
+
+            clip-path: polygon(50% 6%, 96% 92%, 4% 92%);
+
+            cursor: url("cursor.png") 16 16, pointer;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 34px;
+
+            transition: transform .4s ease;
+        }
+
+        /* Заливка треугольника */
+
+        .glitch-button::before {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            clip-path: polygon(50% 6%, 96% 92%, 4% 92%);
+
+            background:
+                linear-gradient(
+                    155deg,
+                    #ff2fd0 0%,
+                    #1a0b18 35%,
+                    #0a1420 65%,
+                    #21e6ff 100%
+                );
+
+            box-shadow:
+                0 20px 80px rgba(0,0,0,.85);
+
+            transition:
+                filter .3s ease,
+                transform .4s cubic-bezier(.16,1,.3,1);
+        }
+
+        /* Тонкая дрожащая обводка-двойник (глитч-слой) */
+
+        .glitch-button::after {
+            content: "";
+
+            position: absolute;
+            inset: 0;
+
+            clip-path: polygon(50% 6%, 96% 92%, 4% 92%);
+
+            border: 1px solid rgba(33,230,255,.5);
+
+            opacity: 0;
+
+            transition: opacity .3s ease;
+        }
+
+        .glitch-button:hover::before {
+            filter: brightness(1.2) saturate(1.3);
+            transform: scale(1.06) skewX(-2deg);
+        }
+
+        .glitch-button:hover::after {
+            opacity: 1;
+            animation: glitchJitter .35s steps(2) infinite;
+        }
+
+        .glitch-button:active::before {
+            transform: scale(.94);
+        }
+
+        @keyframes glitchJitter {
+            0%   { transform: translate(0, 0); }
+            25%  { transform: translate(-2px, 1px); }
+            50%  { transform: translate(2px, -1px); }
+            75%  { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
+        .glitch-text {
+            position: relative;
+            z-index: 3;
+
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+
+            text-shadow:
+                0 0 8px rgba(255,255,255,.4);
+        }
+
+        /* Глитч-раздвоение текста при наведении */
+
+        .glitch-button:hover .glitch-text {
+            animation: glitchText .5s steps(2) infinite;
+        }
+
+        @keyframes glitchText {
+            0% {
+                text-shadow:
+                    2px 0 #ff2fd0,
+                    -2px 0 #21e6ff;
+            }
+            50% {
+                text-shadow:
+                    -2px 0 #ff2fd0,
+                    2px 0 #21e6ff;
+            }
+            100% {
+                text-shadow:
+                    2px 0 #ff2fd0,
+                    -2px 0 #21e6ff;
+            }
+        }
+
+        /* =====================================================
+           СЛОВА ПО БОКАМ ВИДЕО (появляются пока играет
+           третье видео — Mog / True Adam / Chad)
+           ===================================================== */
+
+        .side-word {
+            position: absolute;
+            top: 50%;
+
+            color: #fff;
+            font-weight: 800;
+            font-size: clamp(20px, 3vw, 42px);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+
+            text-shadow:
+                0 0 12px rgba(255,47,208,.7),
+                0 0 24px rgba(33,230,255,.5);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transform: translateY(-50%) scale(.7);
+
+            transition:
+                opacity .35s ease,
+                transform .35s cubic-bezier(.16,1,.3,1);
+
+            z-index: 150;
+        }
+
+        .side-word--left {
+            left: 4%;
+        }
+
+        .side-word--right {
+            right: 4%;
+        }
+
+        .side-word.visible {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+
+        @media (max-width: 700px) {
+
+            .side-word {
+                position: static;
+                transform: none;
+                margin: 6px 0;
+            }
+
+            .side-word.visible {
+                transform: none;
+            }
+        }
+
+        /* =====================================================
+           НИЖНЯЯ ЗОНА НАВЕДЕНИЯ + ВЫГЛЯДЫВАЮЩАЯ ПАПКА
+
+           Невидимая широкая зона внизу по центру страницы.
+           При наведении на неё курсором из-под нижнего края
+           выезжает иконка папки. Клик по ней открывает панель
+           с 5 кнопками.
+           ===================================================== */
+
+        .bottom-hover-zone {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: 320px;
+            height: 90px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+
+            z-index: 50;
+        }
+
+        .folder-peek {
+            position: relative;
+
+            width: 96px;
+            height: 68px;
+
+            border: none;
+            background: none;
+
+            cursor: url("cursor.png") 16 16, pointer;
+
+            transform: translateY(52px);
+
+            transition: transform .5s cubic-bezier(.16,1,.3,1);
+        }
+
+        /* Наведение на широкую зону или сам корешок папки
+           поднимает папку из-за нижнего края экрана */
+
+        .bottom-hover-zone:hover .folder-peek,
+        .folder-peek:focus-visible {
+            transform: translateY(6px);
+        }
+
+        /* =================================
+           КАРТИНКА ПАПКИ
+           Замени folder.png на свою картинку —
+           просто положи файл рядом с index.html
+           под тем же именем (или поменяй src
+           у <img id="folderIcon"> в разметке).
+           ================================= */
+
+        .folder-icon-img {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+
+            width: 100%;
+            height: auto;
+
+            display: block;
+
+            filter: drop-shadow(0 -10px 30px rgba(0,0,0,.7));
+
+            transition: transform .35s ease, filter .35s ease;
+
+            pointer-events: none;
+
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .folder-peek:hover .folder-icon-img {
+            transform: translateY(-4px);
+            filter: drop-shadow(0 -10px 30px rgba(0,0,0,.7)) brightness(1.15);
+        }
+
+        .folder-icon-glow {
+            position: absolute;
+            left: 50%;
+            bottom: 22px;
+
+            width: 22px;
+            height: 22px;
+
+            transform: translateX(-50%);
+
+            border-radius: 50%;
+
+            background: radial-gradient(circle, rgba(255,255,255,.65), transparent 70%);
+
+            opacity: .55;
+
+            animation: folderPulse 2.6s ease-in-out infinite;
+
+            pointer-events: none;
+        }
+
+        @keyframes folderPulse {
+            0%, 100% { opacity: .35; transform: translateX(-50%) scale(.9); }
+            50%      { opacity: .8;  transform: translateX(-50%) scale(1.15); }
+        }
+
+        /* =========================
+           ПАНЕЛЬ ПАПКИ (5 кнопок)
+           ========================= */
+
+        .folder-overlay {
+            position: fixed;
+            inset: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: rgba(0,0,0,.82);
+            backdrop-filter: blur(15px);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: opacity .5s ease, visibility .5s ease;
+
+            z-index: 250;
+        }
+
+        .folder-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .folder-panel {
+            position: relative;
+
+            width: min(90vw, 640px);
+
+            padding: 50px 40px 40px;
+
+            border-radius: 24px;
+
+            border: 1px solid rgba(255,255,255,.14);
+
+            background: radial-gradient(circle at 30% 20%, #232323, #0a0a0a 70%);
+
+            box-shadow: 0 30px 100px rgba(0,0,0,.9);
+
+            transform: scale(.85) translateY(30px);
+            opacity: 0;
+
+            transition:
+                transform .55s cubic-bezier(.16,1,.3,1),
+                opacity .4s ease;
+        }
+
+        .folder-overlay.active .folder-panel {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            transition-delay: .05s;
+        }
+
+        .folder-title {
+            color: #fff;
+            text-align: center;
+
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+
+            opacity: .6;
+
+            margin-bottom: 30px;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .folder-item-button {
+            position: relative;
+
+            aspect-ratio: 1;
+
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 16px;
+
+            background: linear-gradient(155deg, #262626, #0c0c0c 75%);
+
+            color: rgba(255,255,255,.85);
+
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+
+            cursor: url("cursor.png") 16 16, pointer;
+
+            transition:
+                transform .35s cubic-bezier(.16,1,.3,1),
+                border-color .3s ease,
+                box-shadow .35s ease;
+        }
+
+        .folder-item-button:hover {
+            transform: translateY(-4px) scale(1.04);
+            border-color: rgba(255,255,255,.5);
+            box-shadow: 0 15px 40px rgba(0,0,0,.6);
+        }
+
+        .folder-item-button:active {
+            transform: scale(.95);
+        }
+
+        @media (max-width: 500px) {
+
+            .folder-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .folder-panel {
+                padding: 40px 24px 30px;
+            }
+        }
+
+        /* =========================
+           VIDEO OVERLAY (общие стили)
            ========================= */
 
         .video-overlay {
@@ -282,7 +896,7 @@
         }
 
         /* =========================
-           VIDEO BUBBLE
+           VIDEO BUBBLE (общий пузырь)
            ========================= */
 
         .video-wrapper {
@@ -327,16 +941,26 @@
             transition-delay: .05s;
         }
 
-        /* Само видео */
+        /* Само видео.
+           object-fit: contain — видео любого формата
+           (портретное, квадратное, широкое) всегда
+           показывается целиком, без обрезки и искажений.
+           Обёртка при этом сама подгоняется под пропорции
+           конкретного видео через JS (см. ниже), поэтому
+           чёрных полос почти не остаётся. */
 
         video {
             width: 100%;
             height: 100%;
 
-            object-fit: cover;
+            object-fit: contain;
 
             display: block;
         }
+
+        /* У обоих видео нет интерфейса — контролы браузера
+           не подключаются вовсе (атрибут controls не ставится),
+           поэтому дополнительных стилей для скрытия не нужно. */
 
         /* =========================
            CLOSE BUTTON
@@ -389,10 +1013,25 @@
 
         @media (max-width: 600px) {
 
+            .container {
+                gap: 50px;
+            }
+
             .play-button {
                 width: 190px;
                 height: 190px;
                 font-size: 15px;
+            }
+
+            .spark-button {
+                width: 160px;
+                height: 160px;
+                font-size: 13px;
+            }
+
+            .glitch-button {
+                width: 170px;
+                height: 170px;
             }
 
             .video-wrapper {
@@ -422,11 +1061,42 @@
 
         </button>
 
+        <!-- =========================
+             КНОПКА №2 — визуально другая:
+             восьмиугольник, тёплые тона,
+             иконка-искра, поворот на 45° при hover
+             ========================= -->
+
+        <button class="spark-button" id="sparkButton">
+
+            <span class="spark-inner">
+                <span class="spark-icon"></span>
+                <span class="button-text">
+                    Reveal
+                </span>
+            </span>
+
+        </button>
+
+        <!-- =========================
+             КНОПКА №3 — самая необычная:
+             треугольник, неоновый глитч-градиент,
+             дрожащий текст и обводка при hover
+             ========================= -->
+
+        <button class="glitch-button" id="glitchButton">
+
+            <span class="glitch-text">
+                Chaos
+            </span>
+
+        </button>
+
     </main>
 
 
     <!-- =========================
-         VIDEO
+         VIDEO №1 (с контролами)
          ========================= -->
 
     <div class="video-overlay" id="videoOverlay">
@@ -435,18 +1105,198 @@
             ×
         </button>
 
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="videoWrapper">
 
             <!--
                 ЗАМЕНИ video.mp4
-                НА СВОЙ ФАЙЛ
+                НА СВОЙ ФАЙЛ (видео для кнопки Watch)
             -->
 
             <video
                 id="video"
                 src="video.mp4"
-                controls
                 playsinline
+                autoplay
+                preload="metadata"
+            ></video>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         VIDEO №2 (без интерфейса,
+         всегда стартует с начала)
+         ========================= -->
+
+    <div class="video-overlay" id="sparkOverlay">
+
+        <button class="close-button" id="sparkCloseButton">
+            ×
+        </button>
+
+        <div class="video-wrapper" id="sparkVideoWrapper">
+
+            <!--
+                ==============================================
+                ВСТАВЬ СЮДА СВОЁ ВТОРОЕ ВИДЕО:
+                1) положи файл рядом с index.html, например video2.mp4
+                2) пропиши его имя в атрибуте src ниже
+                Формат/пропорции могут быть любыми — пузырь
+                сам подстроится под реальный размер видео.
+                ==============================================
+            -->
+
+            <video
+                id="sparkVideo"
+                src="video2.mp4"
+                playsinline
+                autoplay
+                preload="metadata"
+            ></video>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         VIDEO №3 (без интерфейса,
+         всегда с начала, плюс слова
+         по бокам, пока видео играет)
+         ========================= -->
+
+    <div class="video-overlay" id="glitchOverlay">
+
+        <button class="close-button" id="glitchCloseButton">
+            ×
+        </button>
+
+        <span class="side-word side-word--left" id="glitchWordLeft"></span>
+        <span class="side-word side-word--right" id="glitchWordRight"></span>
+
+        <div class="video-wrapper" id="glitchVideoWrapper">
+
+            <!--
+                ==============================================
+                ВСТАВЬ СЮДА СВОЁ ТРЕТЬЕ ВИДЕО:
+                1) положи файл рядом с index.html, например video3.mp4
+                2) пропиши его имя в атрибуте src ниже
+                Формат/пропорции могут быть любыми — пузырь
+                сам подстроится под реальный размер видео.
+                ==============================================
+            -->
+
+            <video
+                id="glitchVideo"
+                src="video3.mp4"
+                playsinline
+                autoplay
+                preload="metadata"
+            ></video>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         НИЖНЯЯ ЗОНА + ПАПКА С 5 КНОПКАМИ
+
+         Наведи курсор на низ страницы по центру — снизу
+         выглянет папка. Клик по ней открывает панель
+         с 5 кнопками. На каждую из них позже можно
+         повесить своё видео (см. комментарии в JS ниже).
+         ========================================================= -->
+
+    <div class="bottom-hover-zone" id="bottomHoverZone">
+
+        <button class="folder-peek" id="folderPeekButton" aria-label="Открыть папку">
+
+            <!--
+                ЗАМЕНИ folder.png НА СВОЮ КАРТИНКУ
+                (положи файл рядом с index.html
+                и, если назовёшь иначе, поменяй src)
+            -->
+
+            <img
+                class="folder-icon-img"
+                id="folderIcon"
+                src="folder.png"
+                alt="Папка"
+            >
+
+            <span class="folder-icon-glow"></span>
+
+        </button>
+
+    </div>
+
+    <div class="folder-overlay" id="folderOverlay">
+
+        <button class="close-button" id="folderCloseButton">
+            ×
+        </button>
+
+        <div class="folder-panel">
+
+            <div class="folder-title">Папка</div>
+
+            <div class="folder-grid">
+
+                <!--
+                    ==============================================
+                    5 КНОПОК ПАПКИ.
+                    Каждая кнопка открывает то же окно-пузырь
+                    (без интерфейса, всегда с начала, формат
+                    подгоняется автоматически), но со своим видео.
+
+                    Чтобы добавить видео для конкретной кнопки:
+                    1) положи файл рядом с index.html,
+                       например video4.mp4, video5.mp4 и т.д.
+                    2) пропиши имя файла в data-video="..."
+                       у соответствующей кнопки ниже.
+                    3) при желании поменяй подпись кнопки
+                       (текст внутри <button>).
+                    ==============================================
+                -->
+
+                <button class="folder-item-button" data-video="video4.mp4">1</button>
+                <button class="folder-item-button" data-video="video5.mp4">2</button>
+                <button class="folder-item-button" data-video="video6.mp4">3</button>
+                <button class="folder-item-button" data-video="video7.mp4">4</button>
+                <button class="folder-item-button" data-video="video8.mp4">5</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         ОБЩЕЕ ВИДЕО-ОКНО ДЛЯ ВСЕХ 5 КНОПОК ПАПКИ
+
+         Одно окно на все 5 кнопок: при клике на кнопку
+         подставляется её видео (data-video) и запускается
+         с начала. Работает так же, как остальные видео —
+         без интерфейса, формат подгоняется автоматически.
+         ========================================================= -->
+
+    <div class="video-overlay" id="folderVideoOverlay">
+
+        <button class="close-button" id="folderVideoCloseButton">
+            ×
+        </button>
+
+        <div class="video-wrapper" id="folderVideoWrapper">
+
+            <video
+                id="folderVideo"
+                playsinline
+                autoplay
+                preload="metadata"
             ></video>
 
         </div>
@@ -460,13 +1310,113 @@
         const videoOverlay = document.getElementById("videoOverlay");
         const closeButton = document.getElementById("closeButton");
         const video = document.getElementById("video");
+        const videoWrapper = document.getElementById("videoWrapper");
+
+        const sparkButton = document.getElementById("sparkButton");
+        const sparkOverlay = document.getElementById("sparkOverlay");
+        const sparkCloseButton = document.getElementById("sparkCloseButton");
+        const sparkVideo = document.getElementById("sparkVideo");
+        const sparkVideoWrapper = document.getElementById("sparkVideoWrapper");
+
+        const glitchButton = document.getElementById("glitchButton");
+        const glitchOverlay = document.getElementById("glitchOverlay");
+        const glitchCloseButton = document.getElementById("glitchCloseButton");
+        const glitchVideo = document.getElementById("glitchVideo");
+        const glitchVideoWrapper = document.getElementById("glitchVideoWrapper");
+        const glitchWordLeft = document.getElementById("glitchWordLeft");
+        const glitchWordRight = document.getElementById("glitchWordRight");
+
+        const folderPeekButton = document.getElementById("folderPeekButton");
+        const folderOverlay = document.getElementById("folderOverlay");
+        const folderCloseButton = document.getElementById("folderCloseButton");
+        const folderItemButtons = document.querySelectorAll(".folder-item-button");
+
+        const folderVideoOverlay = document.getElementById("folderVideoOverlay");
+        const folderVideoCloseButton = document.getElementById("folderVideoCloseButton");
+        const folderVideo = document.getElementById("folderVideo");
+        const folderVideoWrapper = document.getElementById("folderVideoWrapper");
 
 
-        /* =========================
-           ОТКРЫТЬ ВИДЕО
-           ========================= */
+        /* ==========================================================
+           ПОДГОНКА ПУЗЫРЯ ПОД ФОРМАТ КОНКРЕТНОГО ВИДЕО
+
+           Каждое видео может быть своей ширины/высоты
+           (горизонтальное, вертикальное, квадратное).
+           Эта функция один раз узнаёт реальные пропорции
+           видео (videoWidth / videoHeight) и подгоняет
+           под них размер .video-wrapper, вписывая его
+           в те же максимальные границы, что были заданы
+           в CSS (min(85vw, 1100px) на min(75vh, 700px)).
+
+           Работает независимо для каждой кнопки — свой
+           видеоформат для "Watch" и свой для "Reveal".
+           ========================================================== */
+
+        function fitWrapperToVideo(videoEl, wrapperEl) {
+
+            function applySize() {
+
+                const naturalWidth = videoEl.videoWidth;
+                const naturalHeight = videoEl.videoHeight;
+
+                if (!naturalWidth || !naturalHeight) {
+                    return;
+                }
+
+                const maxWidth = Math.min(window.innerWidth * 0.85, 1100);
+                const maxHeight = Math.min(window.innerHeight * 0.75, 700);
+
+                let width = maxWidth;
+                let height = width * (naturalHeight / naturalWidth);
+
+                if (height > maxHeight) {
+                    height = maxHeight;
+                    width = height * (naturalWidth / naturalHeight);
+                }
+
+                wrapperEl.style.width = width + "px";
+                wrapperEl.style.height = height + "px";
+
+            }
+
+            /*
+                Разные браузеры готовы отдать videoWidth/videoHeight
+                в разный момент — где-то это loadedmetadata, где-то
+                только loadeddata/canplay/playing. Слушаем сразу
+                несколько событий и пробуем применить размер сразу,
+                как только реальные размеры видео стали известны.
+            */
+
+            ["loadedmetadata", "loadeddata", "canplay", "playing"].forEach(
+                (eventName) => {
+                    videoEl.addEventListener(eventName, applySize);
+                }
+            );
+
+            applySize();
+
+            window.addEventListener("resize", applySize);
+
+        }
+
+        fitWrapperToVideo(video, videoWrapper);
+        fitWrapperToVideo(sparkVideo, sparkVideoWrapper);
+        fitWrapperToVideo(glitchVideo, glitchVideoWrapper);
+        fitWrapperToVideo(folderVideo, folderVideoWrapper);
+
+
+        /* ==========================================
+           ОТКРЫТЬ ВИДЕО №1 — без интерфейса,
+           и ВСЕГДА с самого начала, даже если оно
+           уже было открыто и остановлено на середине.
+           ========================================== */
 
         playButton.addEventListener("click", () => {
+
+            /* Сбрасываем на начало при каждом нажатии */
+
+            video.pause();
+            video.currentTime = 0;
 
             videoOverlay.classList.add("active");
 
@@ -485,36 +1435,31 @@
         });
 
 
-        /* =========================
-           ЗАКРЫТЬ ВИДЕО
-           ========================= */
-
-        closeButton.addEventListener("click", closeVideo);
-
-
         /* Закрытие по ESC */
 
         document.addEventListener("keydown", (event) => {
 
             if (event.key === "Escape") {
                 closeVideo();
+                closeSparkVideo();
+                closeGlitchVideo();
             }
 
         });
 
 
+        closeButton.addEventListener("click", closeVideo);
+
         function closeVideo() {
 
             video.pause();
+            video.currentTime = 0;
 
             videoOverlay.classList.remove("active");
 
         }
 
-
-        /* =========================
-           КЛИК ПО ФОНУ
-           ========================= */
+        /* Клик по фону закрывает видео */
 
         videoOverlay.addEventListener("click", (event) => {
 
@@ -524,8 +1469,248 @@
 
         });
 
+
+        /* ==========================================
+           ОТКРЫТЬ ВИДЕО №2 — без интерфейса,
+           и ВСЕГДА с самого начала, даже если оно
+           уже было открыто и остановлено на середине.
+           ========================================== */
+
+        sparkButton.addEventListener("click", () => {
+
+            /* Сбрасываем на начало при каждом нажатии */
+
+            sparkVideo.pause();
+            sparkVideo.currentTime = 0;
+
+            sparkOverlay.classList.add("active");
+
+            setTimeout(() => {
+
+                sparkVideo.play();
+
+            }, 450);
+
+        });
+
+
+        sparkCloseButton.addEventListener("click", closeSparkVideo);
+
+        function closeSparkVideo() {
+
+            sparkVideo.pause();
+            sparkVideo.currentTime = 0;
+
+            sparkOverlay.classList.remove("active");
+
+        }
+
+        sparkOverlay.addEventListener("click", (event) => {
+
+            if (event.target === sparkOverlay) {
+                closeSparkVideo();
+            }
+
+        });
+
+
+        /* ==========================================================
+           ОТКРЫТЬ ВИДЕО №3 — без интерфейса, ВСЕГДА с начала,
+           плюс слова по бокам, которые появляются по очереди
+           пока видео играет: "Mog", "True Adam", "Chad".
+           ========================================================== */
+
+        const sideWords = ["Mog", "True Adam", "Chad"];
+        let sideWordTimer = null;
+        let sideWordIndex = 0;
+
+        function showNextSideWord() {
+
+            /* Прячем текущие слова */
+
+            glitchWordLeft.classList.remove("visible");
+            glitchWordRight.classList.remove("visible");
+
+            setTimeout(() => {
+
+                const leftWord = sideWords[sideWordIndex % sideWords.length];
+                const rightWord = sideWords[(sideWordIndex + 1) % sideWords.length];
+
+                glitchWordLeft.textContent = leftWord;
+                glitchWordRight.textContent = rightWord;
+
+                glitchWordLeft.classList.add("visible");
+                glitchWordRight.classList.add("visible");
+
+                sideWordIndex = (sideWordIndex + 1) % sideWords.length;
+
+            }, 250);
+
+        }
+
+        function startSideWords() {
+
+            stopSideWords();
+
+            sideWordIndex = 0;
+            showNextSideWord();
+
+            sideWordTimer = setInterval(showNextSideWord, 1600);
+
+        }
+
+        function stopSideWords() {
+
+            if (sideWordTimer) {
+                clearInterval(sideWordTimer);
+                sideWordTimer = null;
+            }
+
+            glitchWordLeft.classList.remove("visible");
+            glitchWordRight.classList.remove("visible");
+
+        }
+
+        glitchButton.addEventListener("click", () => {
+
+            /* Сбрасываем на начало при каждом нажатии */
+
+            glitchVideo.pause();
+            glitchVideo.currentTime = 0;
+
+            glitchOverlay.classList.add("active");
+
+            setTimeout(() => {
+
+                glitchVideo.play();
+
+            }, 450);
+
+            startSideWords();
+
+        });
+
+
+        glitchCloseButton.addEventListener("click", closeGlitchVideo);
+
+        function closeGlitchVideo() {
+
+            glitchVideo.pause();
+            glitchVideo.currentTime = 0;
+
+            glitchOverlay.classList.remove("active");
+
+            stopSideWords();
+
+        }
+
+        glitchOverlay.addEventListener("click", (event) => {
+
+            if (event.target === glitchOverlay) {
+                closeGlitchVideo();
+            }
+
+        });
+
+
+        /* ==========================================================
+           ПАПКА С 5 КНОПКАМИ
+
+           1) Клик по выглядывающей папке открывает панель.
+           2) Клик по любой из 5 кнопок внутри — открывает
+              общее видео-окно, подставляя видео именно этой
+              кнопки (атрибут data-video), и запускает его
+              с самого начала (currentTime = 0), без интерфейса.
+           ========================================================== */
+
+        folderPeekButton.addEventListener("click", () => {
+
+            folderOverlay.classList.add("active");
+
+        });
+
+        function closeFolderPanel() {
+
+            folderOverlay.classList.remove("active");
+
+        }
+
+        folderCloseButton.addEventListener("click", closeFolderPanel);
+
+        folderOverlay.addEventListener("click", (event) => {
+
+            if (event.target === folderOverlay) {
+                closeFolderPanel();
+            }
+
+        });
+
+        folderItemButtons.forEach((button) => {
+
+            button.addEventListener("click", () => {
+
+                const src = button.dataset.video;
+
+                if (!src) {
+                    return;
+                }
+
+                /* Если это другое видео — подставляем новый файл */
+
+                if (folderVideo.getAttribute("src") !== src) {
+                    folderVideo.setAttribute("src", src);
+                }
+
+                folderVideo.pause();
+                folderVideo.currentTime = 0;
+
+                /* Сначала закрываем панель, затем открываем видео */
+
+                closeFolderPanel();
+
+                folderVideoOverlay.classList.add("active");
+
+                setTimeout(() => {
+
+                    folderVideo.play();
+
+                }, 450);
+
+            });
+
+        });
+
+        folderVideoCloseButton.addEventListener("click", closeFolderVideo);
+
+        function closeFolderVideo() {
+
+            folderVideo.pause();
+            folderVideo.currentTime = 0;
+
+            folderVideoOverlay.classList.remove("active");
+
+        }
+
+        folderVideoOverlay.addEventListener("click", (event) => {
+
+            if (event.target === folderVideoOverlay) {
+                closeFolderVideo();
+            }
+
+        });
+
+        /* ESC закрывает и папку, и её видео */
+
+        document.addEventListener("keydown", (event) => {
+
+            if (event.key === "Escape") {
+                closeFolderPanel();
+                closeFolderVideo();
+            }
+
+        });
+
     </script>
 
 </body>
 </html>
-```
