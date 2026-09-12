@@ -1045,6 +1045,16 @@
             }
         }
     </style>
+
+    <!--
+        ==================================================
+        TELEGRAM MINI APP SDK
+        Официальный скрипт Telegram — без него приложение
+        всё равно будет работать как обычная веб-страница,
+        но внутри Telegram не получит тему, safe area и т.д.
+        ==================================================
+    -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
 <body>
@@ -1116,7 +1126,6 @@
                 id="video"
                 src="video.mp4"
                 playsinline
-                autoplay
                 preload="metadata"
             ></video>
 
@@ -1152,7 +1161,6 @@
                 id="sparkVideo"
                 src="video2.mp4"
                 playsinline
-                autoplay
                 preload="metadata"
             ></video>
 
@@ -1192,7 +1200,6 @@
                 id="glitchVideo"
                 src="video3.mp4"
                 playsinline
-                autoplay
                 preload="metadata"
             ></video>
 
@@ -1295,7 +1302,6 @@
             <video
                 id="folderVideo"
                 playsinline
-                autoplay
                 preload="metadata"
             ></video>
 
@@ -1305,6 +1311,31 @@
 
 
     <script>
+
+        /* ==========================================================
+           ИНИЦИАЛИЗАЦИЯ TELEGRAM MINI APP
+
+           Если страница открыта внутри Telegram — сообщаем
+           Telegram, что интерфейс готов, разворачиваем окно
+           на весь экран и подстраиваем фон под тему клиента.
+           Если страница открыта просто в браузере — этот блок
+           ничего не делает, страница работает как обычно.
+           ========================================================== */
+
+        if (window.Telegram && window.Telegram.WebApp) {
+
+            const tg = window.Telegram.WebApp;
+
+            tg.ready();
+            tg.expand();
+
+            /* Отключаем случайное закрытие свайпом вниз */
+            if (tg.disableVerticalSwipes) {
+                tg.disableVerticalSwipes();
+            }
+
+        }
+
 
         const playButton = document.getElementById("playButton");
         const videoOverlay = document.getElementById("videoOverlay");
